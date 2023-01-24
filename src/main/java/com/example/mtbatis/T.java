@@ -19,6 +19,7 @@ public class T {
          * */
         String resource = "mybatisconfig.xml";
         InputStream asStream = Resources.getResourceAsStream(resource);
+        System.out.println("hello push");
 
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(asStream);
         //获取和数据库的一次会话  相当于 getConnection()
