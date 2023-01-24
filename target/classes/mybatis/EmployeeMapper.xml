@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    namespace
+    名称空间，写接口的全类名，相当于告诉这个配置文件去实现哪个接口的方法
+-->
+<mapper namespace="com.example.mtbatis.dao.EmployeeMapper">
+
+    <!--type这里也可以使用别名emps-->
+    <resultMap id="employees" type="com.example.mtbatis.entity.Employee">
+        <id property="id" column="id"></id>
+        <result property="empName" column="empname"></result>
+        <result property="gender" column="gender"></result>
+        <result property="email" column="email"></result>
+        <association property="department" javaType="com.example.mtbatis.entity.Department">
+            <id property="id" column="did"></id>
+            <result property="deptName" column="deptName"></result>
+        </association>
+    </resultMap>
+
+    <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="id">
+        insert into t_employee(empname,gender,email,did)
+        values(#{empName},#{gender},#{email},#{did})
+    </insert>
+    <update id="updateEmployee" parameterType="emps">
+        update t_employee
+        set empname = #{empName},
+            gender = #{gender},
+            email = #{email}
+        where id = #{id}
+    </update>
+    <delete id="deleteEmployeeById">
+        delete from t_employee where id = #{id}
+    </delete>
+
+    <!--
+        select: 用来定义一个查询操作
+        id: 方法名  相当于指定这个查询实现这个接口的哪个方法
+        resultType: 指定方法运行后的返回值类型
+        #{字段名}: 代表取出传递过来的某个参数值
+    -->
+    <resultMap id="eps" type="com.example.mtbatis.entity.Employee">
+        <id column="id" property="id"></id>
+        <result column="empname" property="empName"></result>
+        <result column="gender" property="gender"></result>
+        <result column="email" property="email"></result>
+        <discriminator javaType="int" column="gender">
+            <case value="1" resultType="com.example.mtbatis.entity.Employee">
+                <association property="department" column="did" javaType="com.example.mtbatis.entity.Department" select="getDeptById"></association>
+            </case>
+            <case value="0" resultType="com.example.mtbatis.entity.Employee">
+                <result column="empname" property="empName"></result>
+                <result column="gender" property="gender"></result>
+                <result column="email" property="email"></result>
+            </case>
+        </discriminator>
+    </resultMap>
+    <select id="getEmpById" resultType="emps" parameterType="int" useCache="true">
+        <bind name="_email" value="'%'+email+'%'"/>
+        select
+        *
+        from t_employee
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+            <if test="did != null">
+                id = #{did}
+            </if>
+            <if test="email != null">
+                email like #{_email}
+            </if>
+        </where>
+    </select>
+    <select id="getDeptById" resultType="com.example.mtbatis.entity.Department">
+        select * from t_department where id = #{did}
+    </select>
+    <select id="getEmps" resultType="com.example.mtbatis.entity.Employee">
+        <bind name="_email" value="'%'+email+'%'"/>
+        select
+        *
+        from t_employee
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+            <if test="did != null">
+                id = #{did}
+            </if>
+            <if test="email != null">
+                email like #{_email}
+            </if>
+        </where>
+    </select>
+
+    <sql id="employee">id,empname,gender,email</sql>
+</mapper>

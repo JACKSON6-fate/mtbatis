@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="data.properties">
+        <property name="org.apache.ibatis.parsing.PropertyParser.enable-default-value" value="true"/>
+        <property name="driver" value="driver"/>
+        <property name="url" value="url"/>
+        <property name="username" value="username"/>
+        <property name="password" value="password"/>
+    </properties>
+
+    <settings>
+        <!--开启驼峰命名映射
+            即 A_Happy  -> aHappy
+        -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+
+    <typeAliases>
+        <package name="com.example.mtbatis.entity"/>
+    </typeAliases>
+    <!-- 配置数据库信息 -->
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"></transactionManager>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username:root}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <databaseIdProvider type="DB_VENDOR">
+        <property name="MYSQL" value="mysql"/>
+        <property name="SQL Server" value="sqlserver"/>
+        <property name="DB2" value="db2"/>
+        <property name="Oracle" value="oracle" />
+    </databaseIdProvider>
+
+    <!--引入我们编写的每一个接口的实现文件 xml映射文件-->
+    <mappers>
+        <mapper resource="mybatis/EmployeeMapper.xml"></mapper>
+    </mappers>
+</configuration>
